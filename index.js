@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 // Set up the port to use for the server
 const port = process.env.PORT || 5000;
 
