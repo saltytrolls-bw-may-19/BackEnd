@@ -14,7 +14,7 @@ exports.seed = (knex, Promise) => {
           {
             UserName: "John Doe",
             UserPassword:
-              "$2a$12$Mu8GwKITHPm8uwHUf1kwTunnYQmR5tkGY0zVjbCPqYsRgbsYhIoX6" // [plaintext] password
+              "$2a$12$UDDKseQRhFM39d4IYMD.k.yB1wmNbcsSZLPfizXcC8kztMW/kZLKG" // [plaintext] password
           },
           {
             UserName: "AzureDiamond",

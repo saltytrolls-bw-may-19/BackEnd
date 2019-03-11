@@ -12,8 +12,7 @@ function registerUser(userData) {
 function getUsers(user) {
   if (user) {
     return db("Users")
-      .select("UserID", "UserName")
-      .where({ UserID: user.UserID })
+      .where({ "UserName": user.UserName })
       .first();
   }
   return db("Users").select("UserID", "UserName");
