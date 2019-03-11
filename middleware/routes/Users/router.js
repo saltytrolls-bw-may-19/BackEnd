@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const dbHelper = require("./dbHelper");
 
 router.post("/register", async (req, res) => {
-  console.log("Attempting to register new user...");
+  console.log("\nAttempting to register new user...");
 
   const userInfo = req.body;
 
