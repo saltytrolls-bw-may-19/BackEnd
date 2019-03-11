@@ -51,7 +51,7 @@ router.post("/login", async (req, res) => {
       console.log("Checking if a user match exists...");
       const userMatch = await dbHelper.getUsers(userInfo);
       if (userMatch) {
-        console.log("Checking if the correct password was supplied...", userInfo.UserPassword, userMatch);
+        console.log("Checking if the correct password was supplied...");
         if (bcrypt.compareSync(userInfo.UserPassword, userMatch.UserPassword)) {
           console.log("Setting up token...");
           const token = await jwtGenToken(userMatch);
