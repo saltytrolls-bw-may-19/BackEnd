@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 
 const dbHelper = require("./dbHelper");
 const jwtGenToken = require("../../auth/jwt/jwtGenToken");
+const jwtRestrict = require("../../auth/jwt/jwtRestrict");
 
 router.post("/register", async (req, res) => {
   console.log("\nAttempting to register new user...");
@@ -65,6 +66,11 @@ router.post("/login", async (req, res) => {
       res.status(500).json({ msg: err.toString() });
     }
   }
+});
+
+// Middleware for JWT restriction is applied here; if user gets past that, then user is authenticated
+router.get("/auth", jwtRestrict, (req, res) => {
+  res.status(200).json({ msg: "Authentication successful."});
 });
 
 module.exports = router;
