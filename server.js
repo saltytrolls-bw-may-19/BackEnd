@@ -1,12 +1,15 @@
-/* Server imports */
+/* Imports for the server */
 
-const express = require("express"); // For setting up the Express server itself
+const express = require("express"); // Import needed for setting up the Express server itself
 
 const cors = require("cors"); // Set up CORS policy - allows interaction with client app
 const helmet = require("helmet"); // For security
 const morgan = require("morgan"); // For logging
 
-// Set up express server
+// Importing routers
+const rootRouter = require("./middleware/routes/root/router.js"); // Router for root URL of application ("/" route)
+
+// Setting up the express server
 const server = express();
 
 // Built-in middleware to be able to work with JSON files
@@ -16,5 +19,8 @@ server.use(express.json());
 server.use(cors());
 server.use(helmet());
 server.use(morgan("dev")); // Log setting for developer use
+
+// Adding routers
+server.use("/", rootRouter);
 
 module.exports = server;
