@@ -26,7 +26,11 @@ router.post("/register", async (req, res) => {
         .status(201)
         .json({ msg: `${userInfo.UserName} has been registered.` });
     } catch (err) {
-      res.status(500).json({ msg: err.toString() });
+      if (err.errno && err.errno === 19) {
+        res.status(400).json({ msg: "Supplied username was not unique." })
+      } else {
+        res.status(500).json({ msg: err.toString() });
+      }
     }
   }
 });
