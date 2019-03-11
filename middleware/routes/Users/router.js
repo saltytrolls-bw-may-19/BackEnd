@@ -1,9 +1,9 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 
-const dbHelper = require("./dbHelper");
-const jwtGenToken = require("../../auth/jwt/jwtGenToken");
-const jwtRestrict = require("../../auth/jwt/jwtRestrict");
+const dbHelper = require("./dbHelper.js");
+const jwtGenToken = require("../../auth/jwt/jwtGenToken.js");
+const jwtRestrict = require("../../auth/jwt/jwtRestrict.js");
 
 router.post("/register", async (req, res) => {
   console.log("\nAttempting to register new user...");
