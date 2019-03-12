@@ -77,4 +77,32 @@ router.get("/auth", jwtRestrict, (req, res) => {
   res.status(200).json({ msg: "Authentication successful." });
 });
 
+router.delete("/:id", jwtRestrict, async (req, res) => {
+  console.log("\nAttempting to delete the current user...");
+
+  const { id } = req.params;
+  const tokenId = req.decoded.subject;
+
+  console.log("Checking if the ID request parameter matches the given token...");
+  if (id === tokenId) {
+    try {
+      console.log("Performing user deletion operation...");
+      const deletedUser = await dbHelper.deleteUser(id);
+
+      console.log("Checking if a user was actually deleted...")
+      if (deletedUser) {
+        res.status(200).json({ msg: "User was successfully deleted."});
+      } else {
+        // 500 because the current user was supposed to exist before the API call and should be deleted only now
+        res.status(500).json({ msg: "An error occurred in deleting the current user or user might not have been recorded."});
+      }
+    } catch (err) {
+      res.status(500).json({ msg: err.toString() });
+    }
+  } else {
+    // A user should only be able to delete himself/herself (based on their token) and not other users
+    res.status(403).json({ msg: "You cannot perform this operation" })
+  }
+});
+
 module.exports = router;
