@@ -2,7 +2,9 @@ const db = require("../../../data/dbConfig");
 
 module.exports = {
   registerUser,
-  getUsers,
+  getAllUsers,
+  getUserByEmail,
+  getUserById,
   deleteUser,
   updateUserPassword
 };
@@ -11,13 +13,20 @@ function registerUser(userInfo) {
   return db("Users").insert(userInfo);
 }
 
-function getUsers(user) {
-  if (user) {
-    return db("Users")
-      .where({ UserEmail: user.UserEmail })
-      .first();
-  }
+function getAllUsers() {
   return db("Users").select("UserID", "UserEmail");
+}
+
+function getUserByEmail(UserEmail) {
+  return db("Users")
+    .where({ UserEmail })
+    .first();
+}
+
+function getUserById(UserID) {
+  return db("Users")
+    .where({ UserID })
+    .first();
 }
 
 function deleteUser(UserID) {

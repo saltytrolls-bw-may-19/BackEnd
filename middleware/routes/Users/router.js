@@ -49,7 +49,7 @@ router.post("/login", async (req, res) => {
   } else {
     try {
       console.log("Checking if a user match exists...");
-      const userMatch = await dbHelper.getUsers(userInfo);
+      const userMatch = await dbHelper.getUserByEmail(userInfo.UserEmail);
       if (userMatch) {
         console.log("Checking if the correct password was supplied...");
         if (bcrypt.compareSync(userInfo.UserPassword, userMatch.UserPassword)) {
