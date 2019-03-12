@@ -8,7 +8,8 @@ const morgan = require("morgan"); // For logging
 
 // Importing routers
 const rootRouter = require("./middleware/routes/root/router.js"); // Router for root URL of application ("/" route)
-const UsersRouter = require("./middleware/routes/Users/router"); // For handling app users
+const UsersRouter = require("./middleware/routes/Users/router.js"); // For handling app users
+const HackersRouter = require("./middleware/routes/Hackers/router.js")
 const errorRouter = require("./middleware/routes/error/router.js"); // Router for handling bad requests
 
 // Setting up the express server
@@ -25,6 +26,7 @@ server.use(morgan("dev")); // Log setting for developer use
 // Adding routers
 server.use("/", rootRouter);
 server.use("/api/users", UsersRouter);
+server.use('/api/hackers', HackersRouter);
 server.use(errorRouter);
 
 module.exports = server;

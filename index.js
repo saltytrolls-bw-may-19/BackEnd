@@ -1,5 +1,7 @@
+require("dotenv").config();
+
 // Set up the port to use for the server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 
 // Import the server file and get it running
 const server = require("./server.js");
