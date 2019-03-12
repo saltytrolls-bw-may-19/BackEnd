@@ -112,7 +112,7 @@ router.delete("/:id", jwtRestrict, async (req, res) => {
   }
 });
 
-router.patch("/:id", jwtRestrict, async (req, res) => {
+router.patch("/:id/password", jwtRestrict, async (req, res) => {
   console.log("\nAttempting to update the current user's password...");
 
   const { id } = req.params;
