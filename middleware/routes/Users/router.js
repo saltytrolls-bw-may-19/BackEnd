@@ -86,15 +86,22 @@ router.delete("/:id", jwtRestrict, async (req, res) => {
   console.log("Checking if the ID request parameter matches the given token...");
   if (id === tokenId) {
     try {
+      console.log("Checking if current user is recorded in the database...");
+      const currentUser = await dbHelper.getUserById(id);
+      if (!currentUser) {
+        res.status(404).json({ msg: "Current user is not recorded in the database."});
+        return;
+      }
+
       console.log("Performing user deletion operation...");
       const deletedUser = await dbHelper.deleteUser(id);
 
-      console.log("Checking if a user was actually deleted...")
+      console.log("Checking if current user was actually deleted...")
       if (deletedUser) {
         res.status(200).json({ msg: "User was successfully deleted."});
       } else {
         // 500 because the current user was supposed to exist before the API call and should be deleted only now
-        res.status(500).json({ msg: "An error occurred in deleting the current user or user might not have been recorded."});
+        res.status(500).json({ msg: "An error occurred in deleting the current user,"});
       }
     } catch (err) {
       res.status(500).json({ msg: err.toString() });
