@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
         .json({ msg: `${userInfo.UserName} has been registered.` });
     } catch (err) {
       if (err.errno && err.errno === 19) {
-        res.status(400).json({ msg: "Supplied username was not unique." })
+        res.status(400).json({ msg: "Supplied username was not unique." });
       } else {
         res.status(500).json({ msg: err.toString() });
       }
@@ -55,7 +55,11 @@ router.post("/login", async (req, res) => {
         if (bcrypt.compareSync(userInfo.UserPassword, userMatch.UserPassword)) {
           console.log("Setting up token...");
           const token = await jwtGenToken(userMatch);
-          res.status(200).json({token});
+          res.status(200).json({
+            UserID: userMatch.UserID,
+            UserName: userMatch.UserName,
+            token
+          });
         } else {
           res.status(401).json("Invalid credentials.");
         }
@@ -70,7 +74,7 @@ router.post("/login", async (req, res) => {
 
 // Middleware for JWT restriction is applied here; if user gets past that, then user is authenticated
 router.get("/auth", jwtRestrict, (req, res) => {
-  res.status(200).json({ msg: "Authentication successful."});
+  res.status(200).json({ msg: "Authentication successful." });
 });
 
 module.exports = router;
