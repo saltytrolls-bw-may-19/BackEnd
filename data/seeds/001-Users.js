@@ -7,17 +7,17 @@ exports.seed = (knex, Promise) => {
         // Inserts seed entries
         knex("Users").insert([
           {
-            UserName: "User",
+            UserEmail: "user@saltytrolls.com",
             UserPassword:
               "$2a$12$UDDKseQRhFM39d4IYMD.k.yB1wmNbcsSZLPfizXcC8kztMW/kZLKG" // [plaintext] password
           },
           {
-            UserName: "John Doe",
+            UserEmail: "johndoe@lol.com",
             UserPassword:
               "$2a$12$UDDKseQRhFM39d4IYMD.k.yB1wmNbcsSZLPfizXcC8kztMW/kZLKG" // [plaintext] password
           },
           {
-            UserName: "AzureDiamond",
+            UserEmail: "azurediamond@4kun.com",
             UserPassword:
               "$2a$12$mq17wPkfRt0vkEDku7sj3eOSMKeEl/f1GFyXGTGRMLDaK6bDHIjye" // [plaintext] 12345678
           }
