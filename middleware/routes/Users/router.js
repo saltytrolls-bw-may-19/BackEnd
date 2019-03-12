@@ -101,7 +101,7 @@ router.delete("/:id", jwtRestrict, async (req, res) => {
         res.status(200).json({ msg: "User was successfully deleted."});
       } else {
         // 500 because the current user was supposed to exist before the API call and should be deleted only now
-        res.status(500).json({ msg: "An error occurred in deleting the current user,"});
+        res.status(500).json({ msg: "An error occurred in deleting the current user."});
       }
     } catch (err) {
       res.status(500).json({ msg: err.toString() });
@@ -109,6 +109,46 @@ router.delete("/:id", jwtRestrict, async (req, res) => {
   } else {
     // A user should only be able to delete himself/herself (based on their token) and not other users
     res.status(403).json({ msg: "You cannot perform this operation" })
+  }
+});
+
+router.patch("/:id", jwtRestrict, async (req, res) => {
+  console.log("\nAttempting to update the current user's password...");
+
+  const { id } = req.params;
+  const { UserPassword } = req.body;
+
+  console.log("Checking if all required fields were supplied...");
+  if (UserPassword) {
+    console.log("Checking if the ID request parameter matches the given token...");
+    const tokenId = req.decoded.subject;
+    if (id === tokenId) {
+      try {
+        console.log("Checking if current user is recorded in the database...");
+        const currentUser = await dbHelper.getUserById(id);
+        if (!currentUser) {
+          res.status(404).json({ msg: "Current user is not recorded in the database."});
+          return;
+        }
+  
+        console.log("Performing user password update operation...");
+        const updatedUser = await dbHelper.updateUserPassword(id, UserPassword);
+  
+        console.log("Checking if current user's password was actually updated...")
+        if (updatedUser) {
+          res.status(200).json({ msg: "Password was successfully updated."});
+        } else {
+          // 500 because the current user was supposed to exist before the API call and should be deleted only now
+          res.status(500).json({ msg: "An error occurred in updating the current user's password."});
+        }
+      } catch (err) {
+        res.status(500).json({ msg: err.toString() });
+      }
+    } else {
+      res.status(403).json({ msg: "You cannot perform this operation" })
+    }
+  } else {
+    res.status(422).json({ msg: "Password was not supplied." });
   }
 });
 
