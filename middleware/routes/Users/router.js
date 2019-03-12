@@ -11,8 +11,8 @@ router.post("/register", async (req, res) => {
   const userInfo = req.body;
 
   console.log("Checking if all required fields were supplied...");
-  if (!userInfo.UserName) {
-    res.status(422).json({ msg: "Username was not supplied." });
+  if (!userInfo.UserEmail) {
+    res.status(422).json({ msg: "Email address was not supplied." });
   } else if (!userInfo.UserPassword) {
     res.status(422).json({ msg: "Password was not supplied." });
   } else {
@@ -25,10 +25,10 @@ router.post("/register", async (req, res) => {
 
       res
         .status(201)
-        .json({ msg: `${userInfo.UserName} has been registered.` });
+        .json({ msg: `${userInfo.UserEmail} has been registered.` });
     } catch (err) {
       if (err.errno && err.errno === 19) {
-        res.status(400).json({ msg: "Supplied username was not unique." });
+        res.status(400).json({ msg: "Supplied email address was not unique." });
       } else {
         res.status(500).json({ msg: err.toString() });
       }
@@ -42,8 +42,8 @@ router.post("/login", async (req, res) => {
   const userInfo = req.body;
 
   console.log("Checking if all required fields were supplied...");
-  if (!userInfo.UserName) {
-    res.status(422).json({ msg: "Username was not supplied." });
+  if (!userInfo.UserEmail) {
+    res.status(422).json({ msg: "Email address was not supplied." });
   } else if (!userInfo.UserPassword) {
     res.status(422).json({ msg: "Password was not supplied." });
   } else {
@@ -57,7 +57,7 @@ router.post("/login", async (req, res) => {
           const token = await jwtGenToken(userMatch);
           res.status(200).json({
             UserID: userMatch.UserID,
-            UserName: userMatch.UserName,
+            UserEmail: userMatch.UserEmail,
             token
           });
         } else {
