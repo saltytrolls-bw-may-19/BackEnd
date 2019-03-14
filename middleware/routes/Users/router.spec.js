@@ -148,7 +148,7 @@ describe("Users routes:", () => {
       let res = await request(server)
         .post(loginURL)
         .send(testUsers[0]);
-      const token = res.body.token
+      const token = res.body.token;
 
       res = await request(server)
         .get(reqURL)
@@ -161,6 +161,93 @@ describe("Users routes:", () => {
       const res = await request(server)
         .get(reqURL)
         .send(testUsers[0]);
+      expect(res.status).toBe(401);
+    });
+  });
+
+  describe(`Request to "DELETE /api/users/:id":`, () => {
+    const reqURL = "/api/users/2"; // These tests will always try to delete the 2nd user out of 3
+
+    it("• should return a JSON", async () => {
+      const res = await request(server).delete(reqURL);
+      expect(res.type).toBe("application/json");
+    });
+
+    it("• should return status 200 when a valid token is used", async () => {
+      // Register users first to ensure valid logins
+      insertAllUsers();
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[1]);
+      const token = res.body.token;
+
+      res = await request(server)
+        .delete(reqURL)
+        .set("Authorization", token);
+      expect(res.status).toBe(200);
+    });
+
+    it("• should actually delete the user from the database", async () => {
+      // Register users first to ensure valid logins
+      insertAllUsers();
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[1]);
+      const token = res.body.token;
+
+      await request(server)
+        .delete(reqURL)
+        .set("Authorization", token);
+
+      const addedUser = await dbHelper.getUserById(2);
+      expect(addedUser).toBeFalsy();
+    });
+
+    it("• should return status 404 when a non-existent user ID is supplied in the request URL", async () => {
+      // Register a user first to ensure a valid login
+      await request(server)
+        .post(registerURL)
+        .send(testUsers[0]);
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[0]);
+      const token = res.body.token;
+
+      // Delete the logged in user - this will simulate a possible deletion glitch occurring in the database
+      await dbHelper.deleteUser(1);
+
+      res = await request(server)
+        .delete("/api/users/1")
+        .set("Authorization", token);
+      expect(res.status).toBe(404);
+    });
+
+    it("• should return status 403 when a logged in user attempts to delete another user (based on token data)", async () => {
+      // Register a user first to ensure a valid login
+      await request(server)
+        .post(registerURL)
+        .send(testUsers[0]);
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[0]);
+      const token = res.body.token;
+
+      res = await request(server)
+        .delete(reqURL)
+        .set("Authorization", token);
+      expect(res.status).toBe(403);
+    });
+
+    it("• should return status 401 when no valid token is supplied", async () => {
+      const res = await request(server).delete(reqURL);
       expect(res.status).toBe(401);
     });
   });
