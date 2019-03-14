@@ -1,3 +1,3 @@
 module.exports = (req, res) => {
-  res.status(400).send("<h1>Code 400</h1>\n<p>Invalid request.</p>");
+  res.status(400).json({errorInfo: "Code 400 - bad request"});
 };
