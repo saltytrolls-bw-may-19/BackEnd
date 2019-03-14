@@ -49,11 +49,11 @@ describe("Users routes:", () => {
       ).toBeTruthy();
     });
 
-    it("• should return status 422 upon sending incomplete information", async () => {
+    it("• should return status 400 upon sending incomplete information", async () => {
       const res = await request(server)
         .post(reqURL)
         .send({});
-      expect(res.status).toBe(422);
+      expect(res.status).toBe(400);
     });
   });
 
@@ -101,11 +101,11 @@ describe("Users routes:", () => {
       expect(res.status).toBe(401);
     });
 
-    it("• should return status 422 upon sending incomplete information", async () => {
+    it("• should return status 400 upon sending incomplete information", async () => {
       const res = await request(server)
         .post(reqURL)
         .send({});
-      expect(res.status).toBe(422);
+      expect(res.status).toBe(400);
     });
   });
 });
