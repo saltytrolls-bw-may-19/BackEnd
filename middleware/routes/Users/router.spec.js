@@ -49,6 +49,19 @@ describe("Users routes:", () => {
       ).toBeTruthy();
     });
 
+    it("• should return status  422 when attempting to re-register an existing user", async () => {
+      // First registration attempt
+      await request(server)
+        .post(reqURL)
+        .send(testUsers[0]);
+
+      // Re-registration attempt
+      const res = await request(server)
+        .post(reqURL)
+        .send(testUsers[0]);
+      expect(res.status).toBe(422);
+    });
+
     it("• should return status 400 upon sending incomplete information", async () => {
       const res = await request(server)
         .post(reqURL)
