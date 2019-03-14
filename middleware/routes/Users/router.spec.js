@@ -17,7 +17,13 @@ describe("Users routes:", () => {
 
   // Quick function for inserting all test users
   const insertAllUsers = () =>
-    testUsers.forEach(user => (async () => await dbHelper.insert(user))());
+    testUsers.forEach(
+      async user =>
+        await dbHelper.registerUser({
+          ...user,
+          UserPassword: bcrypt.hashSync(user.UserPassword, 12)
+        })
+    );
 
   // Clear the test DB after every test
   afterEach(() => db("Users").truncate());
@@ -92,16 +98,14 @@ describe("Users routes:", () => {
 
     it("• should return a JSON with the corresponding UserID, UserEmail and token", async () => {
       // Add the users first to ensure a valid login
-      await request(server)
-        .post("/api/users/register")
-        .send(testUsers[0]);
+      insertAllUsers();
 
       const res = await request(server)
         .post(reqURL)
-        .send(testUsers[0]);
+        .send(testUsers[1]); // Get second user
       expect(res.body).toEqual({
-        UserID: 1,
-        UserEmail: testUsers[0].UserEmail,
+        UserID: 2, // Should be second user's ID
+        UserEmail: testUsers[1].UserEmail, // Should be second user's email address
         token: res.body.token
       });
     });
