@@ -37,15 +37,6 @@ describe("Users routes:", () => {
       expect(res.status).toBe(201);
     });
 
-    it("• should return the corresponding success message", async () => {
-      const res = await request(server)
-        .post(reqURL)
-        .send(testUsers[0]);
-      expect(res.body).toEqual({
-        msg: `${testUsers[0].UserEmail} has been registered.`
-      });
-    });
-
     it("• should actually insert the new user into the database", async () => {
       await request(server)
         .post(reqURL)
