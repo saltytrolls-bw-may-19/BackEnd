@@ -25,11 +25,15 @@ describe("Users routes:", () => {
         })
     );
 
+  // These URL's will be reused often even in testing other endpoints
+  const registerURL = "/api/users/register";
+  const loginURL = "/api/users/login";
+
   // Clear the test DB after every test
   afterEach(() => db("Users").truncate());
 
   describe(`Request to "POST /api/users/register":`, () => {
-    const reqURL = "/api/users/register";
+    const reqURL = registerURL;
 
     it("• should return a JSON", async () => {
       const res = await request(server).post(reqURL);
@@ -77,7 +81,7 @@ describe("Users routes:", () => {
   });
 
   describe(`Request to "POST /api/users/login":`, () => {
-    const reqURL = "/api/users/login";
+    const reqURL = loginURL;
 
     it("• should return a JSON", async () => {
       const res = await request(server).post(reqURL);
@@ -87,7 +91,7 @@ describe("Users routes:", () => {
     it("• should return status 200 upon sending correct credentials", async () => {
       // Register the user first to ensure a valid login
       await request(server)
-        .post("/api/users/register")
+        .post(registerURL)
         .send(testUsers[0]);
 
       const res = await request(server)
@@ -123,6 +127,41 @@ describe("Users routes:", () => {
         .post(reqURL)
         .send({});
       expect(res.status).toBe(400);
+    });
+  });
+
+  describe(`Request to "GET /api/users/auth":`, () => {
+    const reqURL = "/api/users/auth";
+
+    it("• should return a JSON", async () => {
+      const res = await request(server).get(reqURL);
+      expect(res.type).toBe("application/json");
+    });
+
+    it("• should return status 200 when a valid token is used", async () => {
+      // Register the user first to ensure a valid login
+      await request(server)
+        .post(registerURL)
+        .send(testUsers[0]);
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[0]);
+      const token = res.body.token
+
+      res = await request(server)
+        .get(reqURL)
+        .set("Authorization", token)
+        .send(testUsers[0]);
+      expect(res.status).toBe(200);
+    });
+
+    it("• should return status 401 when no valid token is supplied", async () => {
+      const res = await request(server)
+        .get(reqURL)
+        .send(testUsers[0]);
+      expect(res.status).toBe(401);
     });
   });
 });
