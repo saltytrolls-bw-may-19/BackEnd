@@ -1,7 +1,8 @@
 const router = require("express").Router();
-const bcrypt = require("bcrypt");
 
 const dbHelper = require("./dbHelper.js");
+
+const bcrypt = require("bcrypt");
 const jwtGenToken = require("../../auth/jwt/jwtGenToken.js");
 const jwtRestrict = require("../../auth/jwt/jwtRestrict.js");
 
@@ -12,9 +13,9 @@ router.post("/register", async (req, res) => {
 
   console.log("Checking if all required fields were supplied...");
   if (!userInfo.UserEmail) {
-    res.status(422).json({ msg: "Email address was not supplied." });
+    res.status(400).json({ msg: "Email address was not supplied." });
   } else if (!userInfo.UserPassword) {
-    res.status(422).json({ msg: "Password was not supplied." });
+    res.status(400).json({ msg: "Password was not supplied." });
   } else {
     try {
       console.log("Securing password...");
@@ -28,7 +29,7 @@ router.post("/register", async (req, res) => {
         .json({ msg: `${userInfo.UserEmail} has been registered.` });
     } catch (err) {
       if (err.errno && err.errno === 19) {
-        res.status(400).json({ msg: "Supplied email address was not unique." });
+        res.status(422).json({ msg: "Supplied email address was not unique." });
       } else {
         res.status(500).json({ msg: err.toString() });
       }
@@ -43,9 +44,9 @@ router.post("/login", async (req, res) => {
 
   console.log("Checking if all required fields were supplied...");
   if (!userInfo.UserEmail) {
-    res.status(422).json({ msg: "Email address was not supplied." });
+    res.status(400).json({ msg: "Email address was not supplied." });
   } else if (!userInfo.UserPassword) {
-    res.status(422).json({ msg: "Password was not supplied." });
+    res.status(400).json({ msg: "Password was not supplied." });
   } else {
     try {
       console.log("Checking if a user match exists...");
@@ -167,7 +168,7 @@ router.patch("/:id/password", jwtRestrict, async (req, res) => {
       res.status(403).json({ msg: "You cannot perform this operation" });
     }
   } else {
-    res.status(422).json({ msg: "Password was not supplied." });
+    res.status(400).json({ msg: "Password was not supplied." });
   }
 });
 
