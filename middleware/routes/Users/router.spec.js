@@ -194,7 +194,7 @@ describe("Users routes:", () => {
       insertAllUsers();
 
       // Log in the newly registered user to obtain token
-      let res = await request(server)
+      const res = await request(server)
         .post(loginURL)
         .send(testUsers[1]);
       const token = res.body.token;
@@ -249,6 +249,121 @@ describe("Users routes:", () => {
     it("• should return status 401 when no valid token is supplied", async () => {
       const res = await request(server).delete(reqURL);
       expect(res.status).toBe(401);
+    });
+  });
+
+  describe(`Request to "PATCH /api/users/:id/password":`, () => {
+    const reqURL = "/api/users/2/password"; // These tests will always try to update the 2nd user out of 3
+
+    it("• should return a JSON", async () => {
+      const res = await request(server).patch(reqURL);
+      expect(res.type).toBe("application/json");
+    });
+
+    it("• should return status 200 when a valid token is used", async () => {
+      // Register users first to ensure valid logins
+      insertAllUsers();
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[1]);
+      const token = res.body.token;
+
+      res = await request(server)
+        .patch(reqURL)
+        .set("Authorization", token)
+        .send({UserPassword: faker.internet.password()});
+      expect(res.status).toBe(200);
+    });
+
+    it("• should actually update the user's password in the database", async () => {
+      // Register users first to ensure valid logins
+      insertAllUsers();
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[1]);
+      const token = res.body.token;
+
+      const newPassword = faker.internet.password();
+
+      await request(server)
+        .patch(reqURL)
+        .set("Authorization", token)
+        .send({UserPassword: newPassword});
+
+      res = await request(server)
+        .post(loginURL)
+        .send({
+          ...testUsers[1],
+          UserPassword: newPassword
+        })
+      expect(res.status).toBe(200);
+    });
+
+    it("• should return status 404 when a non-existent user ID is supplied in the request URL", async () => {
+      // Register a user first to ensure a valid login
+      await request(server)
+        .post(registerURL)
+        .send(testUsers[0]);
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[0]);
+      const token = res.body.token;
+
+      // Delete the logged in user - this will simulate a possible deletion glitch occurring in the database
+      await dbHelper.deleteUser(1);
+
+      res = await request(server)
+        .patch("/api/users/1/password")
+        .set("Authorization", token)
+        .send({UserPassword: "test"});
+      expect(res.status).toBe(404);
+    });
+
+    it("• should return status 403 when a logged in user attempts to update another user (based on token data)", async () => {
+      // Register a user first to ensure a valid login
+      await request(server)
+        .post(registerURL)
+        .send(testUsers[0]);
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[0]);
+      const token = res.body.token;
+
+      res = await request(server)
+        .patch(reqURL)
+        .set("Authorization", token)
+        .send({UserPassword: "test"});
+      expect(res.status).toBe(403);
+    });
+
+    it("• should return status 401 when no valid token is supplied", async () => {
+      const res = await request(server).patch(reqURL);
+      expect(res.status).toBe(401);
+    });
+
+    it("• should return status 400 upon sending incomplete information", async () => {
+      // Register users first to ensure valid logins
+      insertAllUsers();
+
+      // Log in the newly registered user to obtain token
+      let res = await request(server)
+        .post(loginURL)
+        .send(testUsers[1]);
+      const token = res.body.token;
+
+      res = await request(server)
+        .patch(reqURL)
+        .set("Authorization", token)
+        .send({});
+      expect(res.status).toBe(400);
     });
   });
 });
